@@ -1,0 +1,112 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// Auth.js required models
+model Account {
+    id                String   @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String?  @db.Text
+    access_token      String?  @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String?  @db.Text
+    session_state     String?
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
+    user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+    @@index([userId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+}
+
+model VerificationToken {
+    identifier String
+    token      String
+    expires    DateTime
+
+    @@id([identifier, token])
+    @@index([identifier])
+}
+
+model User {
+    id                     String                @id @default(cuid())
+    name                   String?
+    email                  String                @unique
+    emailVerified          DateTime?
+    image                  String?
+    accounts               Account[]
+    sessions               Session[]
+    maxActiveMonitors      Int                   @default(5)
+    maxApiCallsPerHour     Int                   @default(100)
+    maxNotificationsPerDay Int                   @default(50)
+    monitors               Monitor[]
+    notificationSettings   NotificationSettings?
+    createdAt              DateTime              @default(now())
+    updatedAt              DateTime              @updatedAt
+
+    @@index([email])
+}
+
+model Monitor {
+    id                String    @id @default(uuid())
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
+    userId            String
+    keywords          String[]
+    excludedKeywords  String[]
+    minPrice          Float?
+    maxPrice          Float?
+    conditions        String[]
+    sellers           String[]
+    status            String    @default("inactive")
+    nextCheckAt       DateTime?
+    lastCheckTime     DateTime?
+    lastResultCount   Int       @default(0)
+    apiCallCount      Int       @default(0)
+    notificationCount Int       @default(0)
+    user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([status])
+}
+
+model NotificationSettings {
+    id                        String    @id @default(uuid())
+    createdAt                 DateTime  @default(now())
+    updatedAt                 DateTime  @updatedAt
+    userId                    String    @unique
+    useLoginEmail             Boolean   @default(true)
+    customEmailAddress        String?
+    emailEnabled              Boolean   @default(true)
+    emailVerified             Boolean   @default(false)
+    emailVerificationToken    String?
+    emailVerificationPin      String?
+    emailVerificationExpires  DateTime?
+    emailVerificationAttempts Int       @default(0)
+    lastEmailChangeDate       DateTime?
+    user                      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+}

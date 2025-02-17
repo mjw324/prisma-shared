@@ -1,0 +1,38 @@
+{
+  "name": "@mjw324/prisma-shared",
+  "version": "1.0.2",
+  "description": "",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mjw324/prisma-shared.git"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "prisma",
+    ".prisma"
+  ],
+  "scripts": {
+    "test:connection": "ts-node src/test-connection.ts",
+    "prebuild": "prisma generate",
+    "build": "tsc",
+    "prepublishOnly": "pnpm run build",
+    "postinstall": "prisma generate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.3.1"
+  },
+  "devDependencies": {
+    "prisma": "^6.3.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}
