@@ -21,7 +21,7 @@
     "test:connection": "ts-node src/test-connection.ts",
     "build": "tsc",
     "prepublishOnly": "pnpm run build",
-    "postinstall": "npx prisma generate"
+    "postinstall": "pnpm prisma generate --schema ./node_modules/@mjw324/prisma-shared/prisma/schema.prisma"
   },
   "keywords": [],
   "author": "",
