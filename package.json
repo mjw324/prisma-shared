@@ -19,10 +19,9 @@
   ],
   "scripts": {
     "test:connection": "ts-node src/test-connection.ts",
-    "prebuild": "prisma generate",
     "build": "tsc",
     "prepublishOnly": "pnpm run build",
-    "postinstall": "prisma generate"
+    "postinstall": "npx prisma generate"
   },
   "keywords": [],
   "author": "",
