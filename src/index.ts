@@ -1,8 +1,10 @@
 import { PrismaClient } from '@prisma/client'
 
-// Export a singleton instance instead of a factory
-const prisma = new PrismaClient();
+// Create single instance
+const prisma = new PrismaClient()
+
+// Export the singleton instance
 export { prisma }
 
-// Also export types
+// Export types
 export * from '@prisma/client'

@@ -18,19 +18,17 @@
     ".prisma"
   ],
   "scripts": {
-    "test:connection": "ts-node src/test-connection.ts",
     "build": "tsc",
-    "prepublishOnly": "pnpm run build",
-    "postinstall": "npx prisma generate"
+    "prepublishOnly": "pnpm run build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^6.3.1"
+    "@prisma/client": "^6.4.1"
   },
   "devDependencies": {
-    "prisma": "^6.3.1",
+    "prisma": "^6.4.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   }
