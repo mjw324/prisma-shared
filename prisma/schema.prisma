@@ -59,15 +59,16 @@ model User {
     accounts               Account[]
     sessions               Session[]
     maxActiveMonitors      Int                   @default(5)
-    maxApiCallsPerHour     Int                   @default(100)
+    maxApiCallsPerHour     Int                   @default(25)
     maxNotificationsPerDay Int                   @default(50)
     monitors               Monitor[]
-    notificationSettings   NotificationSettings?
+    alertEmails            AlertEmail[]
     createdAt              DateTime              @default(now())
     updatedAt              DateTime              @updatedAt
 
     @@index([email])
 }
+
 
 model Monitor {
     id                String    @id @default(uuid())
@@ -92,21 +93,20 @@ model Monitor {
     @@index([status])
 }
 
-model NotificationSettings {
-    id                        String    @id @default(uuid())
-    createdAt                 DateTime  @default(now())
-    updatedAt                 DateTime  @updatedAt
-    userId                    String    @unique
-    useLoginEmail             Boolean   @default(true)
-    customEmailAddress        String?
-    emailEnabled              Boolean   @default(true)
-    emailVerified             Boolean   @default(false)
-    emailVerificationToken    String?
-    emailVerificationPin      String?
-    emailVerificationExpires  DateTime?
-    emailVerificationAttempts Int       @default(0)
-    lastEmailChangeDate       DateTime?
-    user                      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+model AlertEmail {
+    id                    String    @id @default(uuid())
+    email                 String
+    status                String    // "active", "pending verification", "ready"
+    verificationToken     String?
+    verificationPin       String?
+    verificationExpires   DateTime?
+    verificationAttempts  Int       @default(0)
+    createdAt             DateTime  @default(now())
+    updatedAt             DateTime  @updatedAt
+    userId                String
+    user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+    @@unique([userId, email])
     @@index([userId])
+    @@index([status])
 }
