@@ -1,110 +1,120 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
-}
-
-// Better-Auth compatible models with direct field names
-model Account {
-    id                   String    @id @default(cuid())
-    userId               String
-    providerId           String
-    accountId            String
-    refreshToken         String?   @db.Text
-    accessToken          String?   @db.Text
-    accessTokenExpiresAt DateTime?
-    scope                String?
-    idToken              String?   @db.Text
-    createdAt            DateTime  @default(now())
-    updatedAt            DateTime  @updatedAt
-    user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-    @@unique([providerId, accountId])
-    @@index([userId])
-}
-
-model Session {
-    id        String   @id @default(cuid())
-    token     String   @unique
-    userId    String
-    expiresAt DateTime
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-    @@index([userId])
-}
-
-model VerificationToken {
-    identifier String
-    token      String
-    expires    DateTime
-
-    @@id([identifier, token])
-    @@index([identifier])
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-    id                     String       @id @default(cuid())
-    name                   String?
-    email                  String       @unique
-    emailVerified          Boolean?
-    password               String?
-    lastLoggedIn           DateTime?
-    image                  String?
-    accounts               Account[]
-    sessions               Session[]
-    maxActiveMonitors      Int          @default(5)
-    maxApiCallsPerHour     Int          @default(50)
-    maxNotificationsPerDay Int          @default(50)
-    monitors               Monitor[]
-    alertEmails            AlertEmail[]
-    createdAt              DateTime     @default(now())
-    updatedAt              DateTime     @updatedAt
+  id            String   @id @default(cuid())
+  name          String?
+  email         String   @unique
+  emailVerified Boolean?
+  password      String?
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-    @@index([email])
+  lastLoggedIn           DateTime?
+  maxActiveMonitors      Int       @default(5)
+  maxApiCallsPerHour     Int       @default(50)
+  maxNotificationsPerDay Int       @default(50)
+
+  accounts    Account[]
+  sessions    Session[]
+  monitors    Monitor[]
+  alertEmails AlertEmail[]
+
+  @@index([email])
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  providerId            String
+  accountId             String
+  refreshToken          String?   @db.Text
+  accessToken           String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?   @db.Text
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
 }
 
 model Monitor {
-    id                String    @id @default(uuid())
-    createdAt         DateTime  @default(now())
-    updatedAt         DateTime  @updatedAt
-    userId            String
-    keywords          String[]
-    excludedKeywords  String[]
-    minPrice          Float?
-    maxPrice          Float?
-    conditions        String[]
-    sellers           String[]
-    status            String    @default("inactive")
-    nextCheckAt       DateTime?
-    lastCheckTime     DateTime?
-    lastResultCount   Int       @default(0)
-    apiCallCount      Int       @default(0)
-    notificationCount Int       @default(0)
-    user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String    @id @default(uuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  userId            String
+  keywords          String[]
+  excludedKeywords  String[]
+  minPrice          Float?
+  maxPrice          Float?
+  conditions        String[]
+  sellers           String[]
+  status            String    @default("inactive")
+  nextCheckAt       DateTime?
+  lastCheckTime     DateTime?
+  lastResultCount   Int       @default(0)
+  apiCallCount      Int       @default(0)
+  notificationCount Int       @default(0)
 
-    @@index([userId])
-    @@index([status])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
 }
 
 model AlertEmail {
-    id                   String    @id @default(uuid())
-    email                String
-    status               String // "active", "pending verification", "ready"
-    verificationToken    String?
-    verificationPin      String?
-    verificationExpires  DateTime?
-    verificationAttempts Int       @default(0)
-    createdAt            DateTime  @default(now())
-    updatedAt            DateTime  @updatedAt
-    userId               String
-    user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                   String    @id @default(uuid())
+  email                String
+  status               String // "active", "pending verification", "ready"
+  verificationToken    String?
+  verificationPin      String?
+  verificationExpires  DateTime?
+  verificationAttempts Int       @default(0)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  userId               String
 
-    @@unique([userId, email])
-    @@index([userId])
-    @@index([status])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, email])
+  @@index([userId])
+  @@index([status])
 }
