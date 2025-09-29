@@ -1,6 +1,6 @@
 {
   "name": "@mjw324/prisma-shared",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
