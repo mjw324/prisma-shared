@@ -56,6 +56,8 @@ model Session {
   token     String   @unique
   userId    String
   expiresAt DateTime
+  ipAddress String?
+  userAgent String?  @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
