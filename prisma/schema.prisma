@@ -90,6 +90,7 @@ model Monitor {
   conditions        String[]
   sellers           String[]
   status            String    @default("inactive")
+  interval          Int       @default(7200000) // Default 2 hours in milliseconds
   nextCheckAt       DateTime?
   lastCheckTime     DateTime?
   lastResultCount   Int       @default(0)
